@@ -61,6 +61,7 @@ public class App {
              System.out.println("5. Exit");
              System.out.print("Enter your choice: ");
              int choice = scanner.nextInt();
+
              scanner.nextLine(); // consume newline
         
                 switch (choice) {//the switch provides the various options that can be used for the system
