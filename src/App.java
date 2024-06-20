@@ -1,51 +1,5 @@
 import java.util.Scanner;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-
-class Book {//created a class that represents the book object
-    private int id;
-    private String title;//title field represents the title of the book
-    private String author;//author field represents the author of the book(both are saved as strings)
-
-    public Book(int id, String title, String author) {//this is a constructor used for initializing the book object and its attributes
-        this.id = id;
-        this.title = title;
-        this.author = author;
-    }
-
-    public Book(String title, String author) {
-        this.title = title;
-        this.author = author;
-    }
-
-    // Getters and Setters used to access and modify the values of private attributes
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-}
 public class App {
     private static Scanner scanner = new Scanner(System.in);//static variable used on a specific data type
     
@@ -92,38 +46,12 @@ public class App {
                 System.out.print("Enter book author: ");
                 String author = scanner.nextLine();
         
-                Book book = new Book(title, author);
-
-                String sql = "INSERT INTO Books(title, author) VALUES(?, ?)";
-                try (Connection conn = databasehelper.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, book.getTitle());
-                pstmt.setString(2, book.getAuthor());
-                pstmt.executeUpdate();
-                System.out.println("Book added successfully!");
-                } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                    }
+                databasehelper.addBook(title, author);
             }
                 
         
             private static void viewBooks() {//function for viewing all the saved books
-                String sql = "SELECT id, title, author FROM Books";
-                try (Connection conn = databasehelper.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
-
-                if (!rs.isBeforeFirst()) { // Check if result set is empty
-                System.out.println("No books available.");
-                } else {
-                System.out.println("List of books:");
-                while (rs.next()) {
-                    System.out.println(rs.getInt("id") + ". " + rs.getString("title") + " by " + rs.getString("author"));
-                }
-                }
-                } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                }
+                databasehelper.viewBooks();
             }
 
 
@@ -137,21 +65,7 @@ public class App {
                 System.out.print("Enter new author: ");
                 String newAuthor = scanner.nextLine();
         
-                String sql = "UPDATE Books SET title = ?, author = ? WHERE id = ?";
-                try (Connection conn = databasehelper.connect();
-                     PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                    pstmt.setString(1, newTitle);
-                    pstmt.setString(2, newAuthor);
-                    pstmt.setInt(3, id);
-                    int rowsAffected = pstmt.executeUpdate();
-                    if (rowsAffected > 0) {
-                        System.out.println("Book updated successfully!");
-                    } else {
-                        System.out.println("Book not found.");
-                    }
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                }
+                databasehelper.updateBook(id, newTitle, newAuthor);
             }
         
             private static void deleteBook() {//function for deleting any of the saved books 
@@ -159,19 +73,7 @@ public class App {
                 int id = scanner.nextInt();
                 scanner.nextLine(); // consume newline
 
-                String sql = "DELETE FROM Books WHERE id = ?";
-                try (Connection conn = databasehelper.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setInt(1, id);
-                int rowsAffected = pstmt.executeUpdate();
-                if (rowsAffected > 0) {
-                System.out.println("Book deleted successfully!");
-                } else {
-                System.out.println("Book not found.");
-                }
-                } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                }
+                databasehelper.deleteBook(id);
             }
 }
             
